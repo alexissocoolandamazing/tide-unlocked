@@ -8,7 +8,7 @@
 <p align="center"><b>A ranger sees an endangered animal's location only when two independent people approve.</b><br>
 RMIT Hackathon 2026 · Tide UNLOCKED</p>
 
-> **Status:** Working prototype with simulated sign-in. TideCloak integration is in progress (see [Moving to TideCloak](#moving-to-tidecloak)).
+> **Status:** Working Plan C prototype. TideCloak identity and independent authorisation are simulated; live integration was attempted but not completed.
 
 <p align="center">
   <a href="demo.mp4"><img src="demo.gif" alt="Three phones: the ranger requests Rhino 1, the trustee and researcher approve, and the location unlocks on the ranger's phone" width="720"></a><br>
@@ -17,29 +17,22 @@ RMIT Hackathon 2026 · Tide UNLOCKED</p>
 
 ## Project overview
 
-### The problem
-Conservation researchers collect sensitive information about endangered animals, including nesting sites, breeding areas and precise locations. Rangers may need this data to prevent poaching or respond to threats, but exposing it too widely can put the very animals they are trying to protect at risk.
+**Veilwild** is a wildlife intelligence-sharing prototype where a ranger can unlock a specific endangered animal's location only after a researcher and an independent trustee approve.
 
-Sharing an entire wildlife database with every authorised user — or allowing one administrator to unlock it — creates an unnecessary point of failure.
+### Vision & originality
+Rather than replacing conservation databases, Veilwild proposes an access layer for sharing sensitive wildlife locations with field rangers. Requests are limited to a named animal and a specific conservation purpose, not unrestricted access to all tracking records.
 
-### Our solution
-VeilWild is a proposed secure sharing layer for existing conservation databases. A ranger requests access to **one specific geographical section** and explains the conservation need, such as investigating a threat near a vulnerable nesting site.
+### Trust constraint insight
+Location data collected to protect endangered species could also expose them to poaching if improperly released. Ordinary administrator-controlled permissions leave one privileged operator able to override the intended rules. Veilwild's intended model separates the ability to operate the system from the authority to disclose sensitive data.
 
-An administrator reviews and routes the request but **cannot independently view or release sensitive animal-location data**.
+### Value & impact
+A ranger responding to potential poaching activity can request an individual rhino's location for a patrol. The researcher responsible for that animal's area and an independent trustee must both authorise the same request. Other animals' locations remain unavailable.
 
-Access requires **both**:
-1. Approval from the researcher responsible for that section.
-2. Approval from an independent trustee.
+### Why TideCloak matters
+TideCloak's identity, encryption and governance approach could prevent a single administrator from granting themselves access. Our **Plan C prototype simulates** identity verification, roles and independent approval requirements. Live TideCloak integration was attempted but could not be completed reliably; independent key custody and administrator-resistant enforcement are **not yet implemented**.
 
-Only after both authorise the *same request* can the verified ranger access the approved section. Locations and records in other sections remain protected.
-
-### Why Tide?
-A normal application can show approval buttons while still allowing its administrator to change permissions behind the scenes. We aim to use **TideCloak's identity, encryption and governance capabilities** so that access to endangered-animal data is not controlled by a single administrator. Enforcing a specific researcher-plus-trustee rule for each section may require additional Tide policy integration beyond the default quorum features.
-
-### Intended impact
-Help conservation teams act on threats to endangered species without unnecessarily exposing sensitive habitats or animal locations. Researchers retain control over their data, while rangers can request the limited access needed to protect wildlife.
-
-**Prototype scope:** Browser encryption and approval signatures are implemented; TideCloak sign-in and independent key custody are simulated, not production-grade protection.
+### Prototype & storytelling
+Three interactive phones show the ranger requesting a location, the trustee and researcher receiving notifications, and each independently approving. One approval leaves the location locked; the second unlocks only the requested fictional animal. Browser WebCrypto provides AES-GCM encryption and HMAC checks, but the keys remain together in the demo runtime.
 
 ## Access flow
 
