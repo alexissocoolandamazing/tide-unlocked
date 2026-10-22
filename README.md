@@ -1,44 +1,41 @@
-# Tide UNLOCKED — Hackathon Starter
+# Wildlife Data Gateway
 
-A minimal Next.js + TypeScript project scaffold for the RMIT Hackathon Tide UNLOCKED challenge.
+**RMIT Hackathon 2026 | Tide UNLOCKED**
 
-> **Status:** starter only. No chosen challenge concept, security integration or substantive feature is implemented.
+> **Status:** Concept defined. Implementation and Tide integration are not yet complete.
 
-## Run locally
+## Project overview
 
-Requirements: Node.js 20 or later and npm.
+### The problem
+Wildlife researchers collect sensitive information, including locations of endangered animals. Rangers need appropriate access to protect wildlife, but unrestricted database access creates a serious risk if an account or administrator is compromised, or information is improperly disclosed.
 
-```bash
-npm install
-cp .env.example .env.local
-npm run dev
-```
+### Our solution
+Wildlife Data Gateway is a proposed secure sharing layer for existing conservation databases. A ranger requests access to **one specific geographical section** and identifies why the information is needed. An administrator coordinates the request but **cannot independently view or release the protected information**.
 
-Open http://localhost:3000. On Windows PowerShell, use `Copy-Item .env.example .env.local`.
+Access requires **both**:
+1. Approval from the researcher responsible for that section.
+2. Approval from an independent trustee.
 
-Other commands: `npm run typecheck`, `npm run lint`, `npm run build`.
+Only after both authorise the *same request* can the verified ranger access the approved section. Other sections remain protected.
 
-## Project structure
+### Why Tide?
+A normal application can display approval buttons while leaving its administrator able to change permissions. We aim to use **TideCloak's identity, encryption and governance capabilities** so that sensitive access and permission changes are not controlled by a single administrator. Enforcing a particular researcher-plus-trustee rule for each section may require additional Tide policy integration beyond the default quorum features.
 
-- `src/app/page.tsx` — starter homepage
-- `src/app/globals.css` — basic styling
-- `src/app/api/health/route.ts` — example API endpoint (`/api/health`)
-- `src/lib/` — shared logic and future integrations
-- `.env.example` — environment-variable template
+### Intended impact
+Allow researchers and rangers to collaborate without making an entire reserve's sensitive information available to every authorised user. The same model could later support controlled sharing between independent organisations.
 
-## Team workflow
+## Proposed access flow
 
-1. Decide on a project idea and user journey.
-2. Create feature branches and open pull requests into `main`.
-3. Add TideCloak integration (or clearly labelled permitted simulation) as appropriate.
-4. Add a demo video and replace this README with the final submission description.
+1. **Ranger:** Authenticates and requests one section and a defined access scope.
+2. **Administrator:** Reviews and routes the request; cannot bypass the approvals.
+3. **Area researcher:** Approves or rejects access to their assigned section.
+4. **Independent trustee:** Separately approves or rejects the same request.
+5. **Protected release:** Only an authorised ranger receives access to the approved section; other sections remain inaccessible.
 
-## Challenge submission notes (replace before submitting)
+**Key demonstration:** An administrator acting alone is denied; one approval is insufficient; two valid approvals permit section-specific access.
 
-- Project name and problem:
-- Why the solution needs distributed/conditional authority:
-- How access decisions are enforced:
-- What the demo proves:
-- Technology and setup:
+## Implementation and setup
 
-**Do not claim TideCloak is integrated until it actually is.** Never commit API keys or passwords.
+This repository currently documents the concept only. The application, technology stack, setup instructions and demo will be added during development. Any simulated approvals will be clearly identified; the README will not claim cryptographic enforcement until it is implemented and tested.
+
+Use fictional wildlife records and synthetic locations for development. Never upload sensitive real-world animal location data.
