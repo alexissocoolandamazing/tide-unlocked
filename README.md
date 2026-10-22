@@ -1,8 +1,19 @@
-# Endangered Wildlife Data Gateway
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="logo-dark.png">
+    <img src="logo-light.png" alt="veilwild" width="260">
+  </picture>
+</p>
 
-**RMIT Hackathon 2026 | Tide UNLOCKED**
+<p align="center"><b>A ranger sees an endangered animal's location only when two independent people approve.</b><br>
+RMIT Hackathon 2026 · Tide UNLOCKED</p>
 
-> **Status:** Concept defined. Implementation and Tide integration are not yet complete.
+> **Status:** Working prototype with simulated sign-in. TideCloak integration is in progress (see [Moving to TideCloak](#moving-to-tidecloak)).
+
+<p align="center">
+  <a href="demo.mp4"><img src="demo.gif" alt="Three phones: the ranger requests Rhino 1, the trustee and researcher approve, and the location unlocks on the ranger's phone" width="720"></a><br>
+  <sub>Click for the full-quality video (<code>demo.mp4</code>, 34 s).</sub>
+</p>
 
 ## Project overview
 
@@ -12,7 +23,7 @@ Conservation researchers collect sensitive information about endangered animals,
 Sharing an entire wildlife database with every authorised user — or allowing one administrator to unlock it — creates an unnecessary point of failure.
 
 ### Our solution
-Endangered Wildlife Data Gateway is a proposed secure sharing layer for existing conservation databases. A ranger requests access to **one specific geographical section** and explains the conservation need, such as investigating a threat near a vulnerable nesting site.
+VeilWild is a proposed secure sharing layer for existing conservation databases. A ranger requests access to **one specific geographical section** and explains the conservation need, such as investigating a threat near a vulnerable nesting site.
 
 An administrator reviews and routes the request but **cannot independently view or release sensitive animal-location data**.
 
@@ -28,7 +39,7 @@ A normal application can show approval buttons while still allowing its administ
 ### Intended impact
 Help conservation teams act on threats to endangered species without unnecessarily exposing sensitive habitats or animal locations. Researchers retain control over their data, while rangers can request the limited access needed to protect wildlife.
 
-## Proposed access flow
+## Access flow
 
 1. **Ranger:** Authenticates, selects one geographical section and gives a clear conservation reason for requesting access.
 2. **Administrator:** Reviews the request details and routes it; cannot reveal protected locations or bypass approvals.
@@ -38,8 +49,52 @@ Help conservation teams act on threats to endangered species without unnecessari
 
 **Key demonstration:** Even an administrator cannot reveal an endangered animal's location alone. One approval is insufficient; two valid approvals permit access to only the requested section.
 
-## Implementation and setup
+## Try the prototype
 
-This repository currently documents the concept only. The application, technology stack, setup instructions and demo will be added during development. Any simulated approvals will be clearly identified; the README will not claim cryptographic enforcement until it is implemented and tested.
+No build step and no dependencies. Serve the folder and open it in a browser:
 
-Use fictional endangered-wildlife records and synthetic locations for development. Never upload sensitive real-world animal location data.
+```bash
+python3 -m http.server 8765
+```
+
+- **http://localhost:8765/demo.html** — three phones side by side (Ranger, Trustee, Researcher) sharing one live session. On the ranger's phone, request an animal's location (for example Rhino 1) and give a reason. The trustee and researcher are notified, can see whether the other has approved, and approve or decline. Once both approve, the location appears on the ranger's phone.
+- **http://localhost:8765/** — the same app on one screen, with a switcher for the three people.
+
+WebCrypto needs a secure context, so use `localhost` (or HTTPS, such as GitHub Pages) rather than opening the file directly.
+
+### What is real and what is simulated
+
+| | Prototype |
+|---|---|
+| Location encryption | Real: AES-GCM via the browser's WebCrypto |
+| Approvals | Real HMAC signatures, checked before a location is decrypted |
+| Sign-in and roles | **Simulated** |
+| Key custody | **Simulated:** every key lives in the browser tab, so this does not stop a real administrator |
+
+The prototype shows the experience. Enforcement that holds even against a compromised administrator is what the TideCloak integration adds.
+
+## Moving to TideCloak
+
+The plan replaces the simulated parts with TideCloak, using the Tide network's built-in `RelationshipAttestation:1` contract:
+
+- Real TideCloak sign-in for the ranger, trustee and researcher.
+- Each location is encrypted with Tide's threshold encryption and tagged with that animal's id; the server stores ciphertext only.
+- An approval is a read-only policy naming one ranger and one animal, expiring after 24 hours. The network signs it only when **both** the trustee and the researcher approve (they are the realm's only two admins, with a threshold of 2).
+- The ranger's browser decrypts with that policy; the network refuses any other animal, ranger or unsigned policy.
+
+The first step is a spike confirming that one approval cannot produce a signed policy and two can. `index-planc.html` is a copy of the simulated app, kept as a fallback for the presentation.
+
+## Repository layout
+
+| Path | What it is |
+|---|---|
+| `index.html` | The prototype: one self-contained page |
+| `demo.html` | Three-phone demo; each phone is `index.html?as=<person>` |
+| `index-planc.html` | Fallback copy of the simulated prototype |
+| `demo.mp4`, `demo.gif` | Recording of the demo flow |
+| `emblem.png`, `wordmark-mask.png`, `logo-*.png`, `favicon-32.png`, `apple-touch-icon.png` | Logo, emblem, favicons and wordmark mask |
+| `record-demo.mjs` | Re-records `demo.mp4` with Playwright |
+
+## Data
+
+All animals, people and locations in this repository are fictional. Use synthetic locations for development and never upload real-world locations of endangered animals.

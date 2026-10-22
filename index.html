@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>veilwild</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{
+  --bg:#f5f5f2; --card:#ffffff; --ink:#18201b; --muted:#6b7570; --line:#e4e4de; --soft:#f0f1ed;
+  --accent:#2e5a3a; --accent-ink:#ffffff; --accent-soft:#e6eee2; --logo-ink:#2c432f;
+  --ok:#1f7a4c; --okbg:#e3f3ea; --wait:#8a6a12; --waitbg:#f8f0d8; --bad:#b4372b; --badbg:#fbe6e3;
+  --map:#e8eee3; --map-line:#cfd8c8; --water:#b9d4dc;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#111513; --card:#191e1b; --ink:#e7ebe8; --muted:#97a19b; --line:#2a312d; --soft:#202622;
+    --accent:#9fc17f; --accent-ink:#0f1a12; --accent-soft:#22331f; --logo-ink:#ece6d2;
+    --ok:#6fd39b; --okbg:#173426; --wait:#e8c35d; --waitbg:#352c12; --bad:#ff8b7d; --badbg:#3a1d19;
+    --map:#1f2a22; --map-line:#2f3b33; --water:#2b4d58;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111513; --card:#191e1b; --ink:#e7ebe8; --muted:#97a19b; --line:#2a312d; --soft:#202622;
+  --accent:#9fc17f; --accent-ink:#0f1a12; --accent-soft:#22331f; --logo-ink:#ece6d2;
+  --ok:#6fd39b; --okbg:#173426; --wait:#e8c35d; --waitbg:#352c12; --bad:#ff8b7d; --badbg:#3a1d19;
+  --map:#1f2a22; --map-line:#2f3b33; --water:#2b4d58;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,select,textarea{font:inherit;color:inherit}
+.app{max-width:540px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+header .emblem{width:36px;height:36px;display:block;flex:none}
+header h1{margin:0;width:98px;height:27px;background:var(--logo-ink);-webkit-mask:url(wordmark-mask.png) center/contain no-repeat;mask:url(wordmark-mask.png) center/contain no-repeat}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.tag{margin-left:auto;font-size:.72rem;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 9px}
+
+.people{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px;margin-bottom:22px}
+.person{position:relative;border:0;background:none;border-radius:10px;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.person:hover{background:var(--soft)}
+.person[aria-pressed="true"]{background:var(--accent-soft)}
+.person .role{font-size:.78rem;font-weight:600}
+.person[aria-pressed="true"] .role{color:var(--accent)}
+.count{position:absolute;top:4px;right:calc(50% - 26px);min-width:18px;height:18px;border-radius:9px;background:var(--bad);color:#fff;font-size:.7rem;font-weight:700;display:grid;place-items:center;padding:0 5px}
+
+.av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;font-weight:700;background:var(--soft);color:var(--muted);flex:none}
+.av.sm{width:24px;height:24px;font-size:.64rem}
+.av.ranger{background:#dbe7f5;color:#2d5687}
+.av.admin{background:#ece3f5;color:#6a4697}
+.av.trustee{background:#f6e6d6;color:#8a5326}
+.av.researcher{background:#dcefe4;color:#22704a}
+
+h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:650;margin:0 0 10px}
+.hello{margin:0 0 20px}
+.hello b{display:block;font-size:1.25rem;font-weight:650}
+.hello span{color:var(--muted);font-size:.9rem}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.row{display:flex;align-items:center;gap:12px}
+.grow{flex:1;min-width:0}
+.title{font-weight:650}
+.sub{color:var(--muted);font-size:.86rem}
+.icon{width:42px;height:42px;border-radius:12px;background:var(--soft);display:grid;place-items:center;flex:none}
+.icon svg{width:22px;height:22px;fill:var(--muted)}
+
+.btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:600;font-size:.88rem;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{border-color:transparent;background:none;color:var(--muted)}
+.btn:focus-visible,.person:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.pill{font-size:.75rem;font-weight:650;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.pill.wait{background:var(--waitbg);color:var(--wait)}
+.pill.ok{background:var(--okbg);color:var(--ok)}
+.pill.bad{background:var(--badbg);color:var(--bad)}
+.pill.lock{background:var(--soft);color:var(--muted)}
+
+.form{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.form label{font-size:.82rem;font-weight:600;color:var(--muted);display:flex;flex-direction:column;gap:5px}
+select,textarea{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:9px 10px;width:100%}
+textarea{min-height:64px;resize:vertical}
+.form .acts{display:flex;justify-content:flex-end;gap:8px}
+
+.approvals{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.appr{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 3px;font-size:.8rem}
+.appr .st{font-weight:650}
+.appr.ok{background:var(--okbg);border-color:transparent}.appr.ok .st{color:var(--ok)}
+.appr.bad{background:var(--badbg);border-color:transparent}.appr.bad .st{color:var(--bad)}
+.appr.wait .st{color:var(--muted)}
+
+.reason{margin-top:10px;font-size:.9rem}
+.reason .note{color:var(--muted)}
+.decide{display:flex;gap:8px;margin-top:12px}
+.decide .btn{flex:1}
+.done-note{margin-top:12px;font-size:.86rem;color:var(--muted)}
+
+.loc{margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.loc svg{display:block;width:100%;height:auto;background:var(--map)}
+.loc .meta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 12px;font-size:.86rem;background:var(--card)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85rem}
+.pin{animation:drop .45s cubic-bezier(.3,1.4,.6,1)}
+@keyframes drop{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+
+.empty{text-align:center;color:var(--muted);padding:28px 10px;border:1px dashed var(--line);border-radius:14px;font-size:.9rem}
+.bell{display:flex;align-items:center;gap:8px;background:var(--waitbg);color:var(--wait);border-radius:12px;padding:10px 12px;font-size:.88rem;font-weight:600;margin-bottom:14px}
+.bell svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+
+footer{margin-top:28px;display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:.78rem;flex-wrap:wrap}
+footer button{border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:0;font-size:.78rem}
+
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 16px;font-size:.88rem;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.18);max-width:calc(100% - 32px);animation:up .25s ease-out;z-index:10}
+@keyframes up{from{transform:translate(-50%,10px);opacity:0}}
+@media (max-width:420px){.person .role{font-size:.72rem}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+/* Device mode: one person per phone (index.html?as=mika) */
+body.device .app{padding-top:50px}
+body.device .people,body.device footer button{display:none}
+body.device .push{top:52px}
+.me-chip{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:.8rem;font-weight:600;color:var(--muted)}
+.push{position:fixed;left:10px;right:10px;top:10px;z-index:20;display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:11px 13px;box-shadow:0 10px 30px rgba(0,0,0,.16);animation:slide .35s cubic-bezier(.2,1.2,.4,1)}
+.push .app-ic{width:34px;height:34px;flex:none;display:block}
+.push .top{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);text-transform:lowercase}
+.push .h{font-weight:650;font-size:.9rem;line-height:1.3}
+.push .b{font-size:.84rem;color:var(--muted);line-height:1.35}
+@keyframes slide{from{transform:translateY(-120%);opacity:0}to{transform:none;opacity:1}}
+@media (min-width:600px){.push{left:50%;right:auto;width:380px;transform:translateX(-50%);animation:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <img class="emblem" src="emblem.png" alt="">
+    <h1><span class="sr">veilwild</span></h1>
+    <span class="tag" id="tag">Prototype</span>
+  </header>
+  <nav class="people" id="people" aria-label="Switch person"></nav>
+  <main id="screen"></main>
+  <footer><span>Fictional data · TideCloak sign-in simulated</span><button data-act="reset">Reset demo</button></footer>
+</div>
+<div id="push-slot" aria-live="polite"></div>
+<div id="toast-slot" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* ---------- Demo data (fictional) ---------- */
+const START = Date.parse("2026-10-23T09:00:00+11:00");
+const PEOPLE = {
+  mika: {name:"Mika Torres", role:"ranger", label:"Ranger"},
+  hana: {name:"Hana Weiss", role:"trustee", label:"Trustee"},
+  ivy:  {name:"Dr Ivy Chen", role:"researcher", label:"Researcher"},
+};
+const APPROVERS = ["hana", "ivy"];
+const ANIMALS = [
+  {id:"rhino1",    name:"Rhino 1",    species:"Black rhino",     area:"North Ridge",   x:118, y:72},
+  {id:"rhino2",    name:"Rhino 2",    species:"Black rhino",     area:"River Flats",   x:232, y:178},
+  {id:"pangolin1", name:"Pangolin 1", species:"Ground pangolin", area:"Eastern Scrub", x:312, y:84},
+];
+const REASONS = ["Anti-poaching patrol", "Health check", "Injury report", "Fence breach"];
+const SHARE_HOURS = 24;
+
+/* ---------- Helpers ---------- */
+const $ = s => document.querySelector(s);
+const enc = new TextEncoder(), dec = new TextDecoder();
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const initials = n => n.replace(/^Dr /, "").split(" ").map(w => w[0]).join("");
+const time = t => new Intl.DateTimeFormat("en-AU", {timeZone:"Australia/Melbourne", hour:"2-digit", minute:"2-digit", hour12:false}).format(t);
+const grid = (x, y) => `E ${1000 + x * 10} · N ${5000 - y * 10}`;
+const av = (uid, sm) => `<span class="av ${sm ? "sm " : ""}${PEOPLE[uid].role}" aria-hidden="true">${initials(PEOPLE[uid].name)}</span>`;
+const animalOf = id => ANIMALS.find(a => a.id === id);
+const PAW = `<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="6" cy="10" rx="2.2" ry="2.8"/><ellipse cx="10" cy="6" rx="2.2" ry="2.8"/><ellipse cx="14.5" cy="6" rx="2.2" ry="2.8"/><ellipse cx="18.5" cy="10" rx="2.2" ry="2.8"/><path d="M12.2 11.5c3 0 6 4.2 6 6.5 0 1.8-1.6 2.5-3.2 2.1-1-.3-1.9-.7-2.8-.7s-1.8.4-2.8.7C7.8 20.5 6.2 19.8 6.2 18c0-2.3 3-6.5 6-6.5z"/></svg>`;
+const msgFor = (r, d) => `${d}|${r.id}|${r.ranger}|${r.animal}|${r.reason}|${r.note}|${r.at}`;
+
+/* ---------- Shared store ----------
+   Locations are AES-GCM encrypted; they open only when every approver's HMAC signature verifies.
+   In the three-phone demo (demo.html) all phones share one store through the parent page,
+   standing in for the server. */
+function createStore(){
+  let key, cells = {};
+  const signKeys = {}, listeners = new Set();
+  const st = {requests:[], seq:1, now:START, listeners};
+  const verify = async (uid, msg, sig) => {
+    try { return await crypto.subtle.verify("HMAC", signKeys[uid], unb64(sig), enc.encode(msg)); } catch { return false; }
+  };
+  async function open(r){
+    for (const uid of APPROVERS){
+      const a = r.approvals[uid];
+      if (!a || a.decision !== "approve" || !await verify(uid, msgFor(r, "approve"), a.sig)) return null;
+    }
+    const c = cells[r.animal];
+    return JSON.parse(dec.decode(await crypto.subtle.decrypt({name:"AES-GCM", iv:unb64(c.iv)}, key, unb64(c.ct))));
+  }
+  function emit(ev){ for (const fn of [...listeners]) { try { fn(ev); } catch { listeners.delete(fn); } } }
+  st.ready = (async () => {
+    key = await crypto.subtle.generateKey({name:"AES-GCM", length:256}, false, ["encrypt","decrypt"]);
+    for (const uid in PEOPLE) signKeys[uid] = await crypto.subtle.generateKey({name:"HMAC", hash:"SHA-256"}, false, ["sign","verify"]);
+    for (const a of ANIMALS){
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const ct = await crypto.subtle.encrypt({name:"AES-GCM", iv}, key, enc.encode(JSON.stringify({x:a.x, y:a.y})));
+      cells[a.id] = {iv:b64(iv), ct:b64(ct)};
+    }
+  })();
+  st.send = (me, animal, reason, note) => {
+    const r = {id:`R${st.seq++}`, ranger:me, animal, reason, note:note.trim(), at:st.now, approvals:{}, location:null};
+    st.requests.push(r);
+    st.now += 2 * 60e3;
+    emit({type:"request", by:me, r});
+  };
+  st.decide = async (me, id, decision) => {
+    const r = st.requests.find(x => x.id === id);
+    const sig = b64(await crypto.subtle.sign("HMAC", signKeys[me], enc.encode(msgFor(r, decision))));
+    r.approvals[me] = {decision, at:st.now, sig};
+    st.now += 3 * 60e3;
+    const loc = decision === "approve" ? await open(r) : null;
+    if (loc){ r.location = loc; r.sharedAt = st.now; }
+    emit({type: loc ? "shared" : "decision", by:me, decision, r});
+  };
+  st.reset = () => { st.requests.length = 0; st.seq = 1; st.now = START; emit({type:"reset"}); };
+  return st;
+}
+const host = (() => { try { return window.parent !== window && window.parent.location.origin === location.origin ? window.parent : window; } catch { return window; } })();
+const store = host.__veilwildStore ??= createStore();
+
+/* ---------- This screen's state ---------- */
+const asParam = new URLSearchParams(location.search).get("as");
+const DEVICE = PEOPLE[asParam] ? asParam : null;
+const V = {me:DEVICE || "mika", formFor:null, seen:{}};
+if (DEVICE) document.body.classList.add("device");
+
+function statusOf(r){
+  const ds = APPROVERS.map(u => r.approvals[u]?.decision);
+  if (ds.includes("decline")) return "declined";
+  if (ds.every(d => d === "approve")) return "approved";
+  return "pending";
+}
+const approvedCount = r => APPROVERS.filter(u => r.approvals[u]?.decision === "approve").length;
+const waitingFor = uid => store.requests.filter(r => statusOf(r) === "pending" && !r.approvals[uid]);
+const latestFor = animalId => store.requests.filter(r => r.animal === animalId && r.ranger === V.me).at(-1);
+function unread(uid){
+  if (PEOPLE[uid].role === "ranger") return store.requests.filter(r => r.ranger === uid && statusOf(r) !== "pending" && !V.seen[uid + r.id]).length;
+  return waitingFor(uid).length;
+}
+
+/* ---------- Notifications for the person on this screen ---------- */
+function notify(ev){
+  if (ev.type === "reset"){ V.formFor = null; V.seen = {}; render(); return; }
+  const r = ev.r, a = animalOf(r.animal), me = V.me;
+  if (ev.by !== me){
+    if (ev.type === "request" && APPROVERS.includes(me))
+      push("New location request", `${PEOPLE[r.ranger].name} wants the location of ${a.name} · ${r.reason}`);
+    else if (ev.type === "decision" && APPROVERS.includes(me) && !r.approvals[me])
+      push(`${PEOPLE[ev.by].label} ${ev.decision === "approve" ? "approved" : "declined"}`, `${PEOPLE[ev.by].name} ${ev.decision === "approve" ? "approved" : "declined"} ${PEOPLE[r.ranger].name}'s request for ${a.name}`);
+    else if (ev.type === "shared" && me === r.ranger)
+      push("Location shared with you", `${a.name}'s location is unlocked for ${SHARE_HOURS} hours`);
+    else if (ev.type === "shared" && APPROVERS.includes(me))
+      push("Location sent", `Both approved · ${a.name}'s location was sent to ${PEOPLE[r.ranger].name}`);
+    else if (ev.type === "decision" && me === r.ranger && ev.decision === "decline")
+      push("Request declined", `${PEOPLE[ev.by].name} declined your request for ${a.name}`);
+  }
+  render();
+}
+store.listeners.add(notify);
+addEventListener("pagehide", () => store.listeners.delete(notify));
+
+let pushTimer;
+function push(title, body){
+  $("#push-slot").innerHTML = `<div class="push" role="status"><img class="app-ic" src="emblem.png" alt=""><div class="grow"><div class="top"><span>veilwild</span><span>now</span></div><div class="h">${esc(title)}</div><div class="b">${esc(body)}</div></div></div>`;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => $("#push-slot").innerHTML = "", 4000);
+}
+let toastTimer;
+function toast(msg){
+  $("#toast-slot").innerHTML = `<div class="toast">${esc(msg)}</div>`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $("#toast-slot").innerHTML = "", 3000);
+}
+
+/* ---------- Views ---------- */
+function approvalsRow(r){
+  return `<div class="approvals">${APPROVERS.map(u => {
+    const d = r.approvals[u]?.decision;
+    const cls = d === "approve" ? "ok" : d === "decline" ? "bad" : "wait";
+    const st = d === "approve" ? "Approved" : d === "decline" ? "Declined" : "Waiting";
+    return `<span class="appr ${cls}" title="${esc(PEOPLE[u].name)}">${av(u, true)}${u === V.me ? "You" : PEOPLE[u].label} · <span class="st">${st}</span></span>`;
+  }).join("")}</div>`;
+}
+
+function mapFor(r){
+  const a = animalOf(r.animal), {x, y} = r.location;
+  return `<div class="loc">
+    <svg viewBox="0 0 400 220" role="img" aria-label="Map showing the location of ${esc(a.name)}">
+      <path d="M20,20 L380,14 L388,200 L14,206 Z" style="fill:none;stroke:var(--map-line);stroke-width:2"/>
+      <path d="M14,150 C80,130 130,176 200,156 S320,120 388,140" style="fill:none;stroke:var(--water);stroke-width:6;stroke-linecap:round"/>
+      <path d="M200,14 L196,206 M14,110 L388,104" style="stroke:var(--map-line);stroke-width:1.5;stroke-dasharray:4 5"/>
+      <g class="pin"><circle cx="${x}" cy="${y}" r="22" style="fill:var(--accent);opacity:.15"/>
+      <path d="M${x},${y + 2} c-8,-10 -12,-15 -12,-21 a12,12 0 0 1 24,0 c0,6 -4,11 -12,21z" style="fill:var(--accent)"/>
+      <circle cx="${x}" cy="${y - 19}" r="4.5" style="fill:var(--accent-ink)"/></g>
+    </svg>
+    <div class="meta"><span class="mono">${grid(x, y)}</span><span class="sub">Shared for ${SHARE_HOURS} hours</span></div>
+  </div>`;
+}
+
+const reasonLine = r => `<div class="reason"><b>${esc(r.reason)}</b>${r.note ? ` <span class="note">· ${esc(r.note)}</span>` : ""}</div>`;
+const of = r => `${approvedCount(r)} of ${APPROVERS.length}`;
+
+function rangerView(){
+  const me = PEOPLE[V.me];
+  for (const r of store.requests) if (r.ranger === V.me && statusOf(r) !== "pending") V.seen[V.me + r.id] = true;
+  return `<div class="hello"><b>Hi ${esc(me.name.split(" ")[0])}</b><span>Request the location of an animal you need to protect.</span></div>
+  <h2>Tracked animals</h2>
+  ${ANIMALS.map(a => {
+    const r = latestFor(a.id), st = r && statusOf(r);
+    const pill = st === "approved" ? `<span class="pill ok">Location shared</span>`
+      : st === "declined" ? `<span class="pill bad">Declined</span>`
+      : r ? `<span class="pill wait">${of(r)} approved</span>` : "";
+    const canAsk = !r || st === "declined";
+    let body = "";
+    if (V.formFor === a.id){
+      body = `<form class="form" data-animal="${a.id}">
+        <label>Reason<select name="reason">${REASONS.map(x => `<option>${x}</option>`).join("")}</select></label>
+        <label>Details (optional)<textarea name="note" placeholder="e.g. Snare found near the north fence"></textarea></label>
+        <div class="acts"><button type="button" class="btn ghost" data-act="cancel">Cancel</button><button type="submit" class="btn primary">Send request</button></div>
+      </form>`;
+    } else if (r){
+      body = reasonLine(r) + approvalsRow(r) + (r.location ? mapFor(r) : "");
+    }
+    const right = V.formFor === a.id ? "" : canAsk ? `${pill}<button class="btn primary" data-act="ask" data-animal="${a.id}">Request location</button>` : pill;
+    return `<div class="card" data-animal-card="${a.id}">
+      <div class="row"><div class="icon">${PAW}</div>
+        <div class="grow"><div class="title">${esc(a.name)}</div><div class="sub">${esc(a.species)} · ${esc(a.area)}</div></div>${right}
+      </div>${body}</div>`;
+  }).join("")}`;
+}
+
+function approverView(){
+  const me = PEOPLE[V.me];
+  const list = [...store.requests].reverse();
+  const waiting = waitingFor(V.me).length;
+  return `<div class="hello"><b>${esc(me.name)}</b><span>${me.label} · approves location requests</span></div>
+  ${waiting ? `<div class="bell"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>${waiting} new request${waiting > 1 ? "s" : ""} waiting for you</div>` : ""}
+  <h2>Requests</h2>
+  ${list.length ? list.map(r => {
+    const a = animalOf(r.animal), st = statusOf(r), mine = r.approvals[V.me];
+    const pill = st === "approved" ? `<span class="pill ok">Location sent</span>` : st === "declined" ? `<span class="pill bad">Declined</span>` : `<span class="pill wait">${of(r)}</span>`;
+    const footer = mine ? `<div class="done-note">You ${mine.decision === "approve" ? "approved" : "declined"} at ${time(mine.at)}.</div>`
+      : st === "pending" ? `<div class="decide"><button class="btn" data-act="decline" data-id="${r.id}">Decline</button><button class="btn primary" data-act="approve" data-id="${r.id}">Approve</button></div>`
+      : `<div class="done-note">Closed before you responded.</div>`;
+    return `<div class="card">
+      <div class="row">${av(r.ranger)}<div class="grow"><div class="title">${esc(PEOPLE[r.ranger].name)} · ${esc(a.name)}</div><div class="sub">${esc(a.species)} · ${esc(a.area)} · ${time(r.at)}</div></div>${pill}</div>
+      ${reasonLine(r)}${approvalsRow(r)}${footer}</div>`;
+  }).join("") : `<div class="empty">No requests yet.</div>`}`;
+}
+
+function render(){
+  if (DEVICE){
+    $("#tag").outerHTML = `<span class="me-chip" id="tag">${av(V.me, true)}${PEOPLE[V.me].label}</span>`;
+  } else {
+    $("#people").innerHTML = Object.entries(PEOPLE).map(([uid, p]) => {
+      const n = uid === V.me ? 0 : unread(uid);
+      return `<button class="person" data-act="switch" data-uid="${uid}" aria-pressed="${uid === V.me}" aria-label="${esc(p.name)}, ${p.label}${n ? `, ${n} new` : ""}">
+        ${av(uid)}<span class="role">${p.label}</span>${n ? `<span class="count">${n}</span>` : ""}</button>`;
+    }).join("");
+  }
+  $("#screen").innerHTML = PEOPLE[V.me].role === "ranger" ? rangerView() : approverView();
+}
+
+/* ---------- Events ---------- */
+document.addEventListener("click", async e => {
+  const el = e.target.closest("[data-act]");
+  if (!el) return;
+  const {act, uid, animal, id} = el.dataset;
+  if (act === "switch"){
+    V.me = uid; V.formFor = null;
+    const n = unread(uid);
+    if (n) toast(PEOPLE[uid].role === "ranger" ? "A location has been shared with you" : `${n} new request${n > 1 ? "s" : ""} waiting for you`);
+  }
+  else if (act === "ask") V.formFor = animal;
+  else if (act === "cancel") V.formFor = null;
+  else if (act === "reset") return store.reset();
+  else if (act === "approve" || act === "decline"){
+    await store.decide(V.me, id, act);
+    const r = store.requests.find(x => x.id === id);
+    toast(act === "decline" ? "Request declined" : r.location ? `Both approved · location sent to ${PEOPLE[r.ranger].name}` : `Approved · ${of(r)}`);
+    return;
+  }
+  render();
+});
+document.addEventListener("submit", e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  V.formFor = null;
+  store.send(V.me, e.target.dataset.animal, f.get("reason"), f.get("note") || "");
+  toast("Request sent to the trustee and researcher");
+});
+
+store.ready.then(render);
+</script>
+</body>
+</html>

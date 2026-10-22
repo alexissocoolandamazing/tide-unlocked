@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>veilwild demo</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{--bg:#eceee9;--ink:#17201a;--muted:#5f6b64;--accent:#2e5a3a;--logo-ink:#2c432f;--frame:#121614;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d100e;--ink:#e7ebe8;--muted:#97a19b;--accent:#9fc17f;--logo-ink:#ece6d2;--frame:#2a302c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d100e;--ink:#e7ebe8;--muted:#97a19b;--accent:#9fc17f;--logo-ink:#ece6d2;--frame:#2a302c;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.cap{min-height:120px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:12px 16px;gap:4px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .k{border-left:1px solid color-mix(in srgb,var(--muted) 40%,transparent);padding-left:12px;margin-left:2px}
+.brand img{width:44px;height:44px;display:block}
+.brand .wm{width:128px;height:35px;background:var(--logo-ink);-webkit-mask:url(wordmark-mask.png) center/contain no-repeat;mask:url(wordmark-mask.png) center/contain no-repeat}
+.cap .k{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.cap .t{font-size:28px;font-weight:650;letter-spacing:-.01em}
+.cap .d{font-size:16px;color:var(--muted);max-width:820px}
+.stage{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;padding:0 16px 28px}
+.dev{display:flex;flex-direction:column;align-items:center;gap:12px}
+.phone{position:relative;width:414px;height:868px;border-radius:58px;background:var(--frame);padding:12px;box-shadow:0 24px 60px rgba(0,0,0,.18)}
+.phone::before{content:"";position:absolute;top:24px;left:50%;transform:translateX(-50%);width:110px;height:30px;border-radius:16px;background:#000;z-index:2}
+.phone iframe{display:block;width:390px;height:844px;border:0;border-radius:46px;background:#f5f5f2}
+.who{font-weight:650;font-size:15px}
+.who span{color:var(--muted);font-weight:500}
+@media (max-width:460px){.phone{transform:scale(.8);transform-origin:top center;margin-bottom:-174px}}
+</style>
+</head>
+<body>
+<div class="cap"><div class="brand"><img src="emblem.png" alt=""><span class="wm" role="img" aria-label="veilwild"></span><div class="k" id="k">Live demo</div></div>
+  <div class="t" id="t">veilwild on three phones</div>
+  <div class="d" id="d">Each phone is a different person. Make a request on the ranger's phone and watch the others get notified.</div></div>
+<div class="stage">
+  <div class="dev"><div class="phone"><iframe id="f-mika" src="index.html?as=mika" title="Ranger's phone"></iframe></div><div class="who">Ranger <span>· Mika Torres</span></div></div>
+  <div class="dev"><div class="phone"><iframe id="f-hana" src="index.html?as=hana" title="Trustee's phone"></iframe></div><div class="who">Trustee <span>· Hana Weiss</span></div></div>
+  <div class="dev"><div class="phone"><iframe id="f-ivy" src="index.html?as=ivy" title="Researcher's phone"></iframe></div><div class="who">Researcher <span>· Dr Ivy Chen</span></div></div>
+</div>
+</body>
+</html>

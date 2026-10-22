@@ -7,3 +7,7 @@ build/
 *.log
 .DS_Store
 *.tsbuildinfo
+.tide-pack/
+.tidecloak-db/
+data/
+.claude/
