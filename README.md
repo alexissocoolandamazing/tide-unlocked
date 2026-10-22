@@ -39,6 +39,8 @@ A normal application can show approval buttons while still allowing its administ
 ### Intended impact
 Help conservation teams act on threats to endangered species without unnecessarily exposing sensitive habitats or animal locations. Researchers retain control over their data, while rangers can request the limited access needed to protect wildlife.
 
+**Prototype scope:** Browser encryption and approval signatures are implemented; TideCloak sign-in and independent key custody are simulated, not production-grade protection.
+
 ## Access flow
 
 1. **Ranger:** Authenticates, selects one geographical section and gives a clear conservation reason for requesting access.
@@ -75,14 +77,9 @@ The prototype shows the experience. Enforcement that holds even against a compro
 
 ## Moving to TideCloak
 
-The plan replaces the simulated parts with TideCloak, using the Tide network's built-in `RelationshipAttestation:1` contract:
+This is a hackathon software prototype. Live TideCloak integration was attempted but could not be completed reliably. The working browser simulation demonstrates identity-specific requests, two separate approvals and narrowly scoped location disclosure.
 
-- Real TideCloak sign-in for the ranger, trustee and researcher.
-- Each location is encrypted with Tide's threshold encryption and tagged with that animal's id; the server stores ciphertext only.
-- An approval is a read-only policy naming one ranger and one animal, expiring after 24 hours. The network signs it only when **both** the trustee and the researcher approve (they are the realm's only two admins, with a threshold of 2).
-- The ranger's browser decrypts with that policy; the network refuses any other animal, ranger or unsigned policy.
-
-The first step is a spike confirming that one approval cannot produce a signed policy and two can. `index-planc.html` is a copy of the simulated app, kept as a fallback for the presentation.
+A production version would move identity verification, approval authority and decryption key custody into independently enforced Tide-backed controls. **Do not treat this prototype as protection against a compromised administrator.**
 
 ## Repository layout
 
