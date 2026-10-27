@@ -1,3 +1,5 @@
+# Veilwild — Tide UNLOCKED hackathon prototype
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="logo-dark.png">
@@ -14,6 +16,8 @@ RMIT Hackathon 2026 · Tide UNLOCKED</p>
   <a href="demo.mp4"><img src="demo.gif" alt="Three phones: the ranger requests Rhino 1, the trustee and researcher approve, and the location unlocks on the ranger's phone" width="720"></a><br>
   <sub>Click for the full-quality video (<code>demo.mp4</code>, 34 s).</sub>
 </p>
+
+**Team project.** Developed for the RMIT Hackathon 2026 Tide UNLOCKED challenge.
 
 ## Project overview
 
@@ -34,19 +38,20 @@ TideCloak's identity, encryption and governance approach could prevent a single 
 ### Prototype & storytelling
 Three interactive phones show the ranger requesting a location, the trustee and researcher receiving notifications, and each independently approving. One approval leaves the location locked; the second unlocks only the requested fictional animal. Browser WebCrypto provides AES-GCM encryption and HMAC checks, but the keys remain together in the demo runtime.
 
-## Access flow
+## Implemented demo flow
 
-1. **Ranger:** Authenticates, selects one geographical section and gives a clear conservation reason for requesting access.
-2. **Administrator:** Reviews the request details and routes it; cannot reveal protected locations or bypass approvals.
-3. **Area researcher:** Approves or rejects access to the endangered-wildlife records in their assigned section.
-4. **Independent trustee:** Separately approves or rejects the same request.
-5. **Protected release:** Only the authorised ranger receives access to the approved section; all other sensitive locations remain inaccessible.
+1. **Ranger:** Uses a simulated identity, selects one fictional animal and supplies a conservation reason for access.
+2. **Researcher:** Approves or declines that specific request.
+3. **Trustee:** Independently approves or declines the same request in the interface.
+4. **Release:** The demo reveals the requested animal's location only after both approvals pass the browser's checks. One approval is insufficient; other animals are not unlocked by this request.
 
-**Key demonstration:** Even an administrator cannot reveal an endangered animal's location alone. One approval is insufficient; two valid approvals permit access to only the requested section.
+The working demo has three roles: ranger, researcher and trustee. There is no implemented administrator review/routing role. Geographic areas label animals; approval is scoped to an individual animal rather than an entire section.
+
+These are separate simulated identities within a shared browser runtime. The interface demonstrates the two-approval workflow, not independently enforced authority or administrator-resistant security.
 
 ## Try the prototype
 
-No build step and no dependencies. Serve the folder and open it in a browser:
+The browser application has no build step or third-party JavaScript dependencies. With Python 3 installed, serve the folder and open it in a browser:
 
 ```bash
 python3 -m http.server 8765
@@ -66,13 +71,13 @@ WebCrypto needs a secure context, so use `localhost` (or HTTPS, such as GitHub P
 | Sign-in and roles | **Simulated** |
 | Key custody | **Simulated:** every key lives in the browser tab, so this does not stop a real administrator |
 
-The prototype shows the experience. Enforcement that holds even against a compromised administrator is what the TideCloak integration adds.
+The prototype demonstrates the experience. Enforcement against a compromised administrator remains a proposed production requirement; no such protection is established by this browser simulation.
 
 ## Moving to TideCloak
 
 This is a hackathon software prototype. Live TideCloak integration was attempted but could not be completed reliably. The working browser simulation demonstrates identity-specific requests, two separate approvals and narrowly scoped location disclosure.
 
-A production version would move identity verification, approval authority and decryption key custody into independently enforced Tide-backed controls. **Do not treat this prototype as protection against a compromised administrator.**
+A proposed production version would move identity verification, approval authority and decryption key custody into independently enforced Tide-backed controls, with implementation and security validation still required. **Do not treat this prototype as protection against a compromised administrator.**
 
 ## Repository layout
 
@@ -80,10 +85,17 @@ A production version would move identity verification, approval authority and de
 |---|---|
 | `index.html` | The prototype: one self-contained page |
 | `demo.html` | Three-phone demo; each phone is `index.html?as=<person>` |
-| `index-planc.html` | Fallback copy of the simulated prototype |
+| `index-planc.html` | Fallback copy; byte-identical to `index.html` at this documentation review |
 | `demo.mp4`, `demo.gif` | Recording of the demo flow |
 | `emblem.png`, `wordmark-mask.png`, `logo-*.png`, `favicon-32.png`, `apple-touch-icon.png` | Logo, emblem, favicons and wordmark mask |
-| `record-demo.mjs` | Re-records `demo.mp4` with Playwright |
+| `record-demo.mjs` | Recording helper requiring Playwright and ffmpeg in a separate recording environment |
+
+### Additional retained artifacts
+
+- `video.mp4` — approximately 74.85 MB; an additional recording whose relationship to the short demo is not documented.
+- `sourcecodes.zip` — retained source archive; its contents and submission purpose have not been verified in this documentation review.
+
+These files are retained in place. The short `demo.mp4` and `demo.gif` above remain the documented walkthrough. The recording helper's comments describe a `veilwild-recorder` image; instructions for building that image are not included in this repository.
 
 ## Data
 
